@@ -7,19 +7,23 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from profile_app.models.user import User
+from profile_app.services.otp import OTPService
+
 
 @dataclasses.dataclass
 class SignUpRequest:
     email: str
     password: str
-    phone_number: str
+    # phone_number: str
 
 class SignUp(APIView):
     def post(self, raw_request: Request) -> Response:
         request = SignUpRequestSerializer.deserialize_requset(raw_request)
 
-        user = self.create_user(request)
-        return Response({'user': user.email, 'id': user.id}, status=200)
+        # send otp to email
+        OTPService().send_otp(request.email)
+        # user = self.create_user(request)
+        return Response(status=204)
 
     @classmethod
     def create_user(cls, request: SignUpRequest) -> User:
@@ -43,8 +47,8 @@ class SignUpRequestSerializer(serializers.Serializer):
         return SignUpRequest(**validated_data)
 
     email = serializers.EmailField()
-    password = serializers.CharField(min_length=6)
-    phone_number = serializers.CharField(min_length=11, max_length=11)
+    # password = serializers.CharField(min_length=6)
+    # phone_number = serializers.CharField(min_length=11, max_length=11)
 
     @classmethod
     def deserialize_requset(cls, raw_request: Request) -> SignUpRequest:

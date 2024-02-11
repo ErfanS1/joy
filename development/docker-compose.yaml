@@ -9,6 +9,10 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
     ports:
-      - 5432:5432
+      - "5432:5432"
     volumes:
       - /var/lib/joy_db:/var/lib/postgresql/data
+  joy_redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"

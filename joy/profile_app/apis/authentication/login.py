@@ -19,8 +19,7 @@ class Login(APIView):
             # todo add logs
             raise AuthenticationFailed()
 
-        # todo write email service
-        # send_email()
+        # set cookie for the dude !
         return Response(data={"login successful"}, status=HTTP_200_OK)
 
 
