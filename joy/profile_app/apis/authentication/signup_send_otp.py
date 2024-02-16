@@ -5,50 +5,31 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.status import HTTP_204_NO_CONTENT
 
 from profile_app.models.user import User
 from profile_app.services.otp import OTPService
 
-
 @dataclasses.dataclass
 class SignUpRequest:
     email: str
-    password: str
-    # phone_number: str
 
-class SignUp(APIView):
+class SignUpSendOTP(APIView):
     def post(self, raw_request: Request) -> Response:
         request = SignUpRequestSerializer.deserialize_requset(raw_request)
 
         # send otp to email
         OTPService().send_otp(request.email)
-        # user = self.create_user(request)
-        return Response(status=204)
-
-    @classmethod
-    def create_user(cls, request: SignUpRequest) -> User:
-        user = User()
-        user.email = request.email
-        user.set_password(request.password)
-        user.phone_number = request.phone_number
-
-        user.save()
-
-        return user
-
-
-
+        return Response(status=HTTP_204_NO_CONTENT)
 
 class SignUpRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
     def update(self, instance, validated_data):
         pass
 
     def create(self, validated_data):
         return SignUpRequest(**validated_data)
-
-    email = serializers.EmailField()
-    # password = serializers.CharField(min_length=6)
-    # phone_number = serializers.CharField(min_length=11, max_length=11)
 
     @classmethod
     def deserialize_requset(cls, raw_request: Request) -> SignUpRequest:
